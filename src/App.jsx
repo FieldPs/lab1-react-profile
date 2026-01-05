@@ -50,6 +50,7 @@ function App() {
 
   const [skills, setSkills] = useState(['React', 'Git', 'JavaScript', 'CSS']);
   const [newSkill, setNewSkill] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   
   const addSkill = () => {
     if (newSkill.trim() !== "") {
@@ -57,6 +58,14 @@ function App() {
       setNewSkill("");
     }
   };
+
+  const removeSkill = (indexToRemove) => {
+    setSkills(skills.filter((_, index) => index !== indexToRemove));
+  };
+
+  const filteredSkills = skills.filter(skill => 
+    skill.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
@@ -107,13 +116,39 @@ function App() {
             </button>
           </div>
           
-          <h3 className="skills-title">Skills</h3>
+          <div className="search-container">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="🔍 Search skills..."
+              className="search-input"
+            />
+          </div>
+
+          <h3 className="skills-title">Skills ({filteredSkills.length})</h3>
           <div className="skills-grid">
-            {skills.map((skill, index) => (
-              <div key={index} className="skill-tag">
-                {skill}
-              </div>
-            ))}
+            {filteredSkills.length > 0 ? (
+              filteredSkills.map((skill, index) => {
+                const originalIndex = skills.indexOf(skill);
+                return (
+                  <div key={originalIndex} className="skill-tag">
+                    <span style={{ color: skill === 'React' ? 'blue' : 'normal' }}>
+                      {skill}
+                    </span>
+                    <button 
+                      onClick={() => removeSkill(originalIndex)}
+                      className="remove-skill-btn"
+                      title="Remove skill"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                );
+              })
+            ) : (
+              <p className="no-skills-message">No skills found</p>
+            )}
           </div>
         </div>
       </div>
